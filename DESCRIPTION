@@ -87,7 +87,8 @@ Suggests:
     dygraphs,
     tibble,
     fs,
-    callr (>= 2.0.0)
+    callr (>= 2.0.0),
+    pdftools
 SystemRequirements: pandoc (>= 1.12.3) - http://pandoc.org
 URL: https://rmarkdown.rstudio.com
 BugReports: https://github.com/rstudio/rmarkdown/issues

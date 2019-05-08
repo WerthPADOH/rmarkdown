@@ -77,3 +77,40 @@ test_that(
   testFormat(html_vignette(fig_retina = 2))
 
 })
+
+test_that("page_break inserts the right page break for the output type", {
+  rmd_lines <- c(
+    readLines("test-formats.Rmd"),
+    "`r rmarkdown::page_break()`",
+    "PAGEBREAK ABOVE AND BELOW",
+    "`r rmarkdown::page_break()`"
+  )
+  broken_rmd <- tempfile()
+  writeLines(rmd_lines, broken_rmd)
+
+  # check_fun: function returning TRUE if the rendered document has a page with
+  #   just the phrase:
+  #     PAGEBREAK ABOVE AND BELOW
+  #   If it doesn't, returns FALSE.
+  test_page_break <- function(output_format, check_fun) {
+    output_file <- render(
+      input = broken_rmd,
+      output_format = output_format,
+      output_file = I(tempfile()),
+      quiet = TRUE
+    )
+    on.exit(file.remove(output_file))
+    expect_true(check_fun(output_file))
+    output_file
+  }
+
+  test_page_break(pdf_document(), function(path) {
+    pages <- pdftools::pdf_text(path)
+    stripped <- trimws(pages)
+    sum(stripped == "PAGEBREAK ABOVE AND BELOW") == 1
+  })
+
+  # test_page_break(word_document(), function(path) {
+  #
+  # })
+})
